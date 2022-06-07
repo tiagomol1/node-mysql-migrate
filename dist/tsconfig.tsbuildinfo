@@ -541,6 +541,7 @@
         ]
       },
       "resolveJsonModule": true,
+      "declaration": true,
       "sourceMap": false,
       "outDir": "./",
       "esModuleInterop": true,
