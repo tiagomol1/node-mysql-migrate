@@ -1,0 +1,20 @@
+{
+  "name": "node-mysql-migrate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "ts-node ./test/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "@types/mysql": "^2.15.21",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.3"
+  }
+}
