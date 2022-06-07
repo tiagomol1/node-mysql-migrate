@@ -10,5 +10,5 @@ export interface IMigration{
 }
 
 export interface IDatabaseQuery{
-    (command: string): Promise<any[]>
+    (command: string): Promise<any>
 }

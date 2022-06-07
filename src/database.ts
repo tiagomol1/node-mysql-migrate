@@ -19,8 +19,6 @@ export function database(db_config: ConnectionConfig){
 
     }
 
-    return {
-        query
-    }
+    return { query }
 
 }

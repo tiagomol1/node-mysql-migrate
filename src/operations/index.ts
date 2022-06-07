@@ -1,12 +1,12 @@
 import { 
-    createTable, 
+    Table, 
     tablesToCreate, 
-    foreignKeysToCreate, 
-} from './tables'
+    foreignKeysToCreate
+} from './Table'
 import { query, queries } from './query'
 
 export {
-    createTable,
+    Table,
     query,
     tablesToCreate,
     foreignKeysToCreate,
