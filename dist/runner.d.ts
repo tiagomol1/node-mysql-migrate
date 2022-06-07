@@ -1,1 +1,2 @@
-export declare function runner(query: Function): Promise<void>;
+import { IDatabaseQuery } from './interfaces';
+export declare function runner(query: IDatabaseQuery): Promise<void>;

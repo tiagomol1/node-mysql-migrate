@@ -482,8 +482,8 @@
         "affectsGlobalScope": false
       },
       "../src/interfaces.ts": {
-        "version": "b7479485b367cc06ff4fffaff1295ccd4497e5846a6bb761a316de43bd2e962b",
-        "signature": "5d800397d51561bdb6d304e37484d300492b4e7457d64906683da8c922a4891d",
+        "version": "064e18ed64238ec73127d767e5d502e5c11909b9a9b86ebf3b6ac63c18182cec",
+        "signature": "656e0db143c3cca666ea0f4e38bb139fcdc23da2f918cc1d7aab9a8a93ab4147",
         "affectsGlobalScope": false
       },
       "../src/operations/interfaces.ts": {
@@ -507,12 +507,12 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "2c918f3eea59e5f78554ec71a8eef7b5f79594113c66389926e67bc11149acaa",
-        "signature": "c264fd2050b6fc562f6a6ab2a9d25227544d28c705c0585e25cddf3e36116b9e",
+        "version": "f2936989ae8e56399389ba78cbd9a59f5913982995c655bbe81b937983694cc4",
+        "signature": "4c77ac4a7578aeab0953c7640b063bcacec2eec7b9e7bf1151e3153e4939db14",
         "affectsGlobalScope": false
       },
       "../src/migration.ts": {
-        "version": "59b54bdab4cfb5721f2bd28d20e930a1e9ced15142b5df47050a592e86cb8184",
+        "version": "3462442f9c1d052ac9a29546f4989f45dd58b5e370e6216827f5112c00ef0aac",
         "signature": "e4baa8f23575993df29474d15cbd301896984f92ee5ec358eb8e4cf3c59f92d3",
         "affectsGlobalScope": false
       },
@@ -524,6 +524,11 @@
       "../src/types.ts": {
         "version": "013ad723ab4b0d1916cf7100cfb7f4aa9261f2a1a2c5330f4cf8954d322db41a",
         "signature": "134215dbedbfff886379637e2637a59aa9c3426eb54908e42c86eb1cefe2605c",
+        "affectsGlobalScope": false
+      },
+      "../node_modules/@types/json-schema/index.d.ts": {
+        "version": "f3e604694b624fa3f83f6684185452992088f5efb2cf136b62474aa106d6f1b6",
+        "signature": "f3e604694b624fa3f83f6684185452992088f5efb2cf136b62474aa106d6f1b6",
         "affectsGlobalScope": false
       }
     },
@@ -554,6 +559,9 @@
       "configFilePath": "../tsconfig.json"
     },
     "referencedMap": {
+      "../node_modules/@types/json-schema/index.d.ts": [
+        "../node_modules/@types/node/util.d.ts"
+      ],
       "../node_modules/@types/mysql/index.d.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/node/index.d.ts",
@@ -926,6 +934,7 @@
       ],
       "../src/runner.ts": [
         "../node_modules/@types/node/util.d.ts",
+        "../src/interfaces.ts",
         "../src/operations/index.ts",
         "../src/operations/interfaces.ts"
       ],
@@ -1063,6 +1072,9 @@
       ]
     },
     "exportedModulesMap": {
+      "../node_modules/@types/json-schema/index.d.ts": [
+        "../node_modules/@types/node/util.d.ts"
+      ],
       "../node_modules/@types/mysql/index.d.ts": [
         "../node_modules/@types/node/events.d.ts",
         "../node_modules/@types/node/index.d.ts",
@@ -1419,6 +1431,9 @@
       "../src/operations/tables.ts": [
         "../src/operations/interfaces.ts"
       ],
+      "../src/runner.ts": [
+        "../src/interfaces.ts"
+      ],
       "../../../../../../usr/share/nodejs/typescript/lib/lib.dom.d.ts": [
         "../node_modules/@types/node/util.d.ts"
       ],
@@ -1550,6 +1565,7 @@
       ]
     },
     "semanticDiagnosticsPerFile": [
+      "../node_modules/@types/json-schema/index.d.ts",
       "../node_modules/@types/mysql/index.d.ts",
       "../node_modules/@types/node/assert.d.ts",
       "../node_modules/@types/node/assert/strict.d.ts",
