@@ -1,4 +1,4 @@
-import { IConfig } from './interfaces'
+import { IConfig, IMigration } from './interfaces'
 import { database } from './database'
 import { runner } from './runner'
 
@@ -13,7 +13,7 @@ class MigrationDataSource{
         this.run(migrations)
     }
 
-    private async run(migrations: any[]){
+    private async run(migrations: IMigration[]){
 
         migrations.map(migration => migration())
         await runner(this.connectionQuery)

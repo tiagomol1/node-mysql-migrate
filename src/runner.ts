@@ -3,8 +3,9 @@ import {
     foreignKeysToCreate
 } from './operations/index'
 import { ITable, ITablesToCreate, IDropTable } from './operations/interfaces'
+import { IDatabaseQuery } from './interfaces'
 
-export async function runner(query: Function){
+export async function runner(query: IDatabaseQuery){
 
     const db_getTables = await query('show tables')
     const {
@@ -63,7 +64,7 @@ function verifyTables(tables: any[]){
 
 }
 
-async function runningDropTable(tables: IDropTable[], query: Function){
+async function runningDropTable(tables: IDropTable[], query: IDatabaseQuery){
     console.info('\n> Dropping unused tables:')
 
     return await tables.forEach(async table => {
@@ -73,7 +74,7 @@ async function runningDropTable(tables: IDropTable[], query: Function){
     })
 }
 
-async function runningCreateTable(tables: ITablesToCreate[], query: Function){
+async function runningCreateTable(tables: ITablesToCreate[], query: IDatabaseQuery){
     console.info('\n> Creating new tables:')
 
     return await tables.forEach(async table => {
@@ -82,7 +83,7 @@ async function runningCreateTable(tables: ITablesToCreate[], query: Function){
     })
 }
 
-async function compareCreatedTables(tables: ITable[], query: Function){
+async function compareCreatedTables(tables: ITable[], query: IDatabaseQuery){
     console.log('\n> Compare schemas:')
 
     

@@ -4,26 +4,12 @@
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "keywords": [
-    "db",
-    "database",
-    "migrate",
-    "migration",
-    "migrations",
-    "migrator",
-    "db-migrate",
-    "sql",
-    "mysql",
-    "msysql-migrate",
-    "mysql-migrations",
-    "programatic",
-    "programable",
-    "api"
-  ],
+  "keywords": [],
   "scripts": {
+    "lint": "eslint ./src ./test --ext .ts",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
     "dev": "ts-node ./test/index.ts"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -31,6 +17,9 @@
   },
   "devDependencies": {
     "@types/mysql": "^2.15.21",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
+    "eslint": "^8.17.0",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
   },
