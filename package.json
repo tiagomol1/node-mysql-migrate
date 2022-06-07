@@ -1,9 +1,25 @@
 {
   "name": "node-mysql-migrate",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "keywords": [
+    "db",
+    "database",
+    "migrate",
+    "migration",
+    "migrations",
+    "migrator",
+    "db-migrate",
+    "sql",
+    "mysql",
+    "msysql-migrate",
+    "mysql-migrations",
+    "programatic",
+    "programable",
+    "api"
+  ],
   "scripts": {
     "dev": "ts-node ./test/index.ts"
   },
@@ -17,5 +33,9 @@
     "@types/mysql": "^2.15.21",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tiagomol1/node-mysql-migrate"
   }
 }
