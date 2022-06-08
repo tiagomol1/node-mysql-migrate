@@ -2,7 +2,7 @@ import {
     Table, 
     tablesToCreate, 
     foreignKeysToCreate
-} from './Table'
+} from './table'
 import { query, queries } from './query'
 
 export {

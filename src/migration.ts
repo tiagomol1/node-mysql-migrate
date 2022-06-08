@@ -14,10 +14,9 @@ class MigrationDataSource{
     }
 
     private async run(migrations: IMigration[]){
-
         migrations.map(migration => migration())
         await migrationController(this.connectionQuery)
-
+        return
     } 
 
 }

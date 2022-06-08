@@ -4,6 +4,7 @@ export function database(db_config: ConnectionConfig){
 
     async function query(command: string){
 
+        db_config.flags = '-FOUND_ROWS,IGNORE_SPACE'
         const connection = mysql.createConnection(db_config)
 
         const results =  await new Promise((resolve) => {

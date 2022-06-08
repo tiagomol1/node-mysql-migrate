@@ -16,14 +16,16 @@ export async function migrationController(query: IDatabaseQuery){
     } = verifyTables(dbCreatedTables)
 
     if(pendingTablesToDrop.length > 0){
-        await exec.execDropTable(pendingTablesToDrop)
+        await exec.sqlConstructorDropTable(pendingTablesToDrop)
     }
     if(pendingTablesToCreate.length > 0){
-        await exec.execCreateTable(pendingTablesToCreate)
+        await exec.sqlConstructorCreateTable(pendingTablesToCreate)
     }
     if(createdTablesToVerify.length > 0){
         compareTables(createdTablesToVerify, dbCreatedTables)
     }
+
+    return await exec.runCommands()
 
 }
 
