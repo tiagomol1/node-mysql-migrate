@@ -1,5 +1,5 @@
-import { tablesToCreate } from './operations/index'
-import { ITable, ITablesToCreate, IDropTable } from './operations/interfaces'
+import { tablesToCreate, foreignKeysToCreate } from './operations/index'
+import { ITable, ITablesToCreate, IDropTable, IForeignKeyCommand } from './operations/interfaces'
 import { IDatabaseQuery } from './interfaces'
 import { runner } from './runner'
 
@@ -13,7 +13,16 @@ export async function migrationController(query: IDatabaseQuery){
         pendingTablesToCreate,
         pendingTablesToDrop,
         createdTablesToVerify
-    } = verifyTables(dbCreatedTables)
+    } = identifyTables(dbCreatedTables)
+
+    const {
+        pendingForeignKeysToCreate,
+        pendingForeignKeysToRemove,
+        pendingForeignKeysToUpdate
+    } = identifyForeignKeys(
+        pendingTablesToCreate,
+        createdTablesToVerify
+    )
 
     if(pendingTablesToDrop.length > 0){
         await exec.sqlConstructorDropTable(pendingTablesToDrop)
@@ -29,7 +38,7 @@ export async function migrationController(query: IDatabaseQuery){
 
 }
 
-function verifyTables(tables: ITable[]){
+function identifyTables(tables: ITable[]){
     console.info('\n> Checking created, dropped and altered tables.')
 
     const createdTables: string[] = []
@@ -67,8 +76,39 @@ function verifyTables(tables: ITable[]){
 
 }
 
-function compareTables(tables: ITable[], createdTables: ITable[]){
-
+function identifyForeignKeys(
+    pendingTablesToCreate: ITablesToCreate[],
+    createdTablesToVerify: ITable[],
+){
     
+    const pendingForeignKeysToCreate : IForeignKeyCommand[] = []
+    const pendingForeignKeysToRemove : IForeignKeyCommand[] = []
+    const pendingForeignKeysToUpdate : IForeignKeyCommand[] = []
+    foreignToCreate()
+    foreignToUpdate()
+    ForeignToRemove()
+    
+    function foreignToCreate() {
 
+    }
+
+    function foreignToUpdate() {
+
+    }
+
+    function ForeignToRemove() {
+
+    }
+
+    return {
+        pendingForeignKeysToCreate,
+        pendingForeignKeysToRemove,
+        pendingForeignKeysToUpdate
+    }
+
+}
+
+function compareTables(tables: ITable[], createdTables: ITable[]){
+    console.log('NEW',tables[0].fields)
+    console.log('OLD',createdTables[0].fields)
 }

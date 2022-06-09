@@ -66,19 +66,34 @@ export function runner(query: IDatabaseQuery){
             tables.push({
                 tableName: selectTables[i]['table_name'],
                 fields: fields.map((field: any): IFields => {
-                    return {
+                    
+                    const fieldsFormat: IFields = {
                         name: field['name'],
                         type: field['type'],
-                        default: field['default_value'],
-                        fk: {
+                        isNull: field['isNull'] ? true : false
+                    }
+
+                    if(field['increment']){ 
+                        fieldsFormat.increment = true
+                    }
+                    if(field['pk']){ 
+                        fieldsFormat.pk = true
+                    }
+                    if(field['size_int']){
+                        fieldsFormat.size = field['size_int']
+                    }
+                    if(field['default_value']){
+                        fieldsFormat.default = field['default_value']
+                    } 
+                    if(field['fk']){
+                        fieldsFormat.fk = {
                             tableName: field['fk_tableName'],
                             fieldName: field['fk_fieldName']
-                        },
-                        increment: field['increment'] ? true : false,
-                        isNull: field['isNull'] ? true : false,
-                        pk: field['pk'] ? true : false,
-                        size: field['size_int']
+                        }
                     }
+
+
+                    return fieldsFormat
                 })
             })
         }
@@ -134,6 +149,7 @@ export function runner(query: IDatabaseQuery){
                         name,
                         type,
                         default_value,
+                        fk,
                         fk_tableName,
                         fk_fieldName,
                         increment,
@@ -146,12 +162,13 @@ export function runner(query: IDatabaseQuery){
                         '${field.name}',
                         '${field.type}',
                         ${field.default ? `'${field.default}'` : null},
+                        ${field.fk ? 1 : null},
                         ${field.fk?.tableName ? `'${field.fk.tableName}'` : null},
                         ${field.fk?.fieldName ? `'${field.fk.fieldName}'` : null},
                         ${field.increment ? 1 : 0},                      
                         ${field.isNull ? 1 : 0},            
                         ${field.pk ? 1 : 0},     
-                        ${field.size ? 1 : 0}     
+                        ${field.size ? field.size : 0}     
                     );
                 `)
             })
@@ -161,6 +178,8 @@ export function runner(query: IDatabaseQuery){
 
     async function execAlterTable(tables: ITable[]){
         console.info('\n> Compare schemas:')
+
+        
     }
 
     async function runCommands(){
