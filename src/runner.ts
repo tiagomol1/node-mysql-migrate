@@ -1,4 +1,4 @@
-import { IDatabaseQuery } from "./interfaces";
+import { IDatabaseQuery, IColumns } from "./interfaces";
 import { ITable, ITablesToCreate, IDropTable, IFields } from './operations/interfaces'
 
 export function runner(query: IDatabaseQuery){
@@ -6,9 +6,10 @@ export function runner(query: IDatabaseQuery){
     const createTableCommands: string[] = []
     const createTableController: string[] = []
     const alterTableCommand: string[] = []
-    const alterTableController: string[] = []
     const dropTableCommand: string[] = []
     const dropTableController: string[] = []
+    const migrationsController: string[] = []
+    const foreignKeys: string[] = []
 
     async function createControllerTables(){
 
@@ -176,12 +177,6 @@ export function runner(query: IDatabaseQuery){
         })
     }
 
-    async function execAlterTable(tables: ITable[]){
-        console.info('\n> Compare schemas:')
-
-        
-    }
-
     async function runCommands(){
         console.info('\n > Running SQL commands:')
 
@@ -198,8 +193,93 @@ export function runner(query: IDatabaseQuery){
         }
 
         console.info('  - Altering altered tables')
+        for(let i = 0; i < alterTableCommand.length; i++){
+            await query(alterTableCommand[i])
+        }
 
-        return
+        console.info('  - Update Migrations Controller DB')
+        for(let i = 0; i < migrationsController.length; i++){
+            await query(migrationsController[i])
+        }
+    }
+
+    async function sqlContructorAlterTableAddColumn(columns: IColumns[]){
+        for(const column of columns){
+            const {
+                field: {
+                    isNull,
+                    name,
+                    type,
+                    fk,
+                    increment,
+                    pk,
+                    size,
+                    default: default_value
+                }, 
+                tableName
+            } = column
+
+            const table_id = await query(`select * from db_migrations_tables where table_name = '${tableName}'`)
+            migrationsController.push(`
+                INSERT INTO db_migrations_fields (db_migrations_tables_id, name, type, pk, fk, fk_tableName, fk_fieldName, increment, default_value, size_int, isNull)
+                VALUES ('${table_id[0].id}', '${name}', '${type}', '${pk ? 1 : 0}', ${fk ? 1 : 'NULL'}, ${fk ? `'${fk.tableName}'` : 'NULL'}, ${fk ? `'${fk.fieldName}'` : 'NULL'}, ${increment ? 1 : 0}, ${default_value ? `${default_value}`: 'NULL'}, ${size ? size : 0}, ${isNull ? 1 : 0})
+            `)        
+
+            alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
+            if(fk){
+                foreignKeys.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
+            }
+        }
+    }
+
+    async function sqlContructorAlterTableModifyColumn(columns: IColumns[]){
+        for(const column of columns){
+            const {
+                field: {
+                    isNull,
+                    name,
+                    type,
+                    fk,
+                    increment,
+                    pk,
+                    size,
+                    default: default_value
+                }, 
+                tableName
+            } = column
+
+            const table_id = await query(`select * from db_migrations_tables where table_name = '${tableName}';`)
+            migrationsController.push(`
+                update db_migrations_fields set type = '${type}', pk = ${pk ? 1 : 0}, 
+                    fk = ${fk ? 1 : 'NULL'}, fk_tableName = ${fk ? `'${fk.tableName}'` : 'NULL'}, 
+                    fk_fieldName = ${fk ? `'${fk.fieldName}'` : 'NULL'}, increment = ${increment ? 1 : 0}, 
+                    default_value = ${default_value ? `'${default_value}'` : 'NULL'}, 
+                    size_int = ${size ? size : 0}, isNull = ${isNull ? 1 : 0}
+                where db_migrations_tables_id = ${table_id[0].id} and name = '${name}';
+            `)
+
+            alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
+            
+            if(fk){
+                foreignKeys.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
+            }
+        }
+    }
+
+    async function sqlContructorAlterTableDropColumn(columns: IColumns[]){
+        for(const column of columns){
+            const {
+                field: {
+                    name
+                }, 
+                tableName
+            } = column
+
+            const table_id = await query(`select * from db_migrations_tables where table_name = '${tableName}';`)
+            migrationsController.push(`delete from db_migrations_fields where db_migrations_tables_id = ${table_id[0].id} and name = '${name}';`)  
+            
+            alterTableCommand.push(`ALTER TABLE ${tableName} DROP COLUMN ${name};`)
+        }
     }
 
     return {
@@ -207,7 +287,9 @@ export function runner(query: IDatabaseQuery){
         getCreatedTables,
         sqlConstructorDropTable,
         sqlConstructorCreateTable,
-        execAlterTable,
+        sqlContructorAlterTableAddColumn,
+        sqlContructorAlterTableModifyColumn,
+        sqlContructorAlterTableDropColumn,
         runCommands
     }
 

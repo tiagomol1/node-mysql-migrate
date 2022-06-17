@@ -1,11 +1,12 @@
-import { tablesToCreate, foreignKeysToCreate } from './operations/index'
-import { ITable, ITablesToCreate, IDropTable, IForeignKeyCommand } from './operations/interfaces'
-import { IDatabaseQuery } from './interfaces'
+import _ from 'lodash'
+import { tablesToCreate } from './operations/index'
+import { ITable, ITablesToCreate, IDropTable } from './operations/interfaces'
+import { IColumns, IDatabaseQuery } from './interfaces'
 import { runner } from './runner'
 
 export async function migrationController(query: IDatabaseQuery){
 
-    const exec = await runner(query)
+    const exec = runner(query)
     await exec.createControllerTables()
     const dbCreatedTables = await exec.getCreatedTables()
     
@@ -15,14 +16,6 @@ export async function migrationController(query: IDatabaseQuery){
         createdTablesToVerify
     } = identifyTables(dbCreatedTables)
 
-    const {
-        pendingForeignKeysToCreate,
-        pendingForeignKeysToRemove,
-        pendingForeignKeysToUpdate
-    } = identifyForeignKeys(
-        pendingTablesToCreate,
-        createdTablesToVerify
-    )
 
     if(pendingTablesToDrop.length > 0){
         await exec.sqlConstructorDropTable(pendingTablesToDrop)
@@ -31,7 +24,15 @@ export async function migrationController(query: IDatabaseQuery){
         await exec.sqlConstructorCreateTable(pendingTablesToCreate)
     }
     if(createdTablesToVerify.length > 0){
-        compareTables(createdTablesToVerify, dbCreatedTables)
+        const {
+            newFields,
+            alteredFields,
+            fieldsToDrop
+        } = compareTables(createdTablesToVerify, dbCreatedTables)   
+
+        await exec.sqlContructorAlterTableDropColumn(fieldsToDrop)
+        await exec.sqlContructorAlterTableModifyColumn(alteredFields)
+        await exec.sqlContructorAlterTableAddColumn(newFields)
     }
 
     return await exec.runCommands()
@@ -76,39 +77,64 @@ function identifyTables(tables: ITable[]){
 
 }
 
-function identifyForeignKeys(
-    pendingTablesToCreate: ITablesToCreate[],
-    createdTablesToVerify: ITable[],
-){
+function compareTables(tables: ITable[], createdTables: ITable[]){
+
+    const ordenedCreatedTables : ITable[] = []
+
+    // sorting table sequences for comparison
+    tables.forEach(table => {
+        
+        const item = createdTables.filter(createdTables =>{
+            return createdTables.tableName == table.tableName
+        })
+
+        ordenedCreatedTables.push(item[0])
+    })  
+
+    const newFields : IColumns[] = []
+    const alteredFields : IColumns[] = []
+    const fieldsToDrop: IColumns[] = []
     
-    const pendingForeignKeysToCreate : IForeignKeyCommand[] = []
-    const pendingForeignKeysToRemove : IForeignKeyCommand[] = []
-    const pendingForeignKeysToUpdate : IForeignKeyCommand[] = []
-    foreignToCreate()
-    foreignToUpdate()
-    ForeignToRemove()
-    
-    function foreignToCreate() {
+    // running comparisons
+    for(let i = 0; i < tables.length; i++){
 
-    }
+        if(!_.isEqual(tables[i], ordenedCreatedTables[i])){
 
-    function foreignToUpdate() {
+            // comparison to find new and changed fields
+            tables[i].fields.map(field => {
+                const correspondentField = ordenedCreatedTables[i].fields
+                    .filter(correspondentField => {
+                        return correspondentField.name == field.name
+                    })
+                
+                if(correspondentField.length == 0){
+                    newFields.push({field: field, tableName: tables[i].tableName})
+                } else {
+                    if(!_.isEqual(field, correspondentField[0])){
+                        alteredFields.push({field: field, tableName: tables[i].tableName})
+                    }
+                }
+            })
 
-    }
+            // comparison to find fields that will be dropped
+            ordenedCreatedTables[i].fields.map(field => {
+                const correspondentField = tables[i].fields
+                    .filter(correspondentField => {
+                        return correspondentField.name == field.name
+                    })
+                
+                if(correspondentField.length == 0){
+                    fieldsToDrop.push({field: field, tableName: ordenedCreatedTables[i].tableName})
+                }
+            })
 
-    function ForeignToRemove() {
-
+        }
+        
     }
 
     return {
-        pendingForeignKeysToCreate,
-        pendingForeignKeysToRemove,
-        pendingForeignKeysToUpdate
+        newFields,
+        alteredFields,
+        fieldsToDrop
     }
-
-}
-
-function compareTables(tables: ITable[], createdTables: ITable[]){
-    console.log('NEW',tables[0].fields)
-    console.log('OLD',createdTables[0].fields)
 }
