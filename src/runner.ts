@@ -1,5 +1,5 @@
 import { IDatabaseQuery, IColumns } from "./interfaces";
-import { ITable, ITablesToCreate, IDropTable, IFields } from './operations/interfaces'
+import { ITable, ITablesToCreate, IDropTable, IFields, IForeignKeyCommand } from './operations/interfaces'
 
 export function runner(query: IDatabaseQuery){
 
@@ -9,7 +9,7 @@ export function runner(query: IDatabaseQuery){
     const dropTableCommand: string[] = []
     const dropTableController: string[] = []
     const migrationsController: string[] = []
-    const foreignKeys: string[] = []
+    const foreignKeysController: string[] = []
 
     async function createControllerTables(){
 
@@ -182,24 +182,29 @@ export function runner(query: IDatabaseQuery){
 
         console.info('  - Create new tables;')
         const createCommands = createTableCommands.concat(createTableController)
-        for(let i = 0; i < createCommands.length; i++){
-            await query(createCommands[i])
+        for(const createCommand of createCommands){
+            await query(createCommand)
         }
 
         console.info('  - Dropp unused tables;')
         const dropCommands = dropTableCommand.concat(dropTableController)
-        for(let i = 0; i < dropCommands.length; i++){
-            await query(dropCommands[i])
+        for(const dropCommand of dropCommands){
+            await query(dropCommand)
         }
 
         console.info('  - Altering altered tables')
-        for(let i = 0; i < alterTableCommand.length; i++){
-            await query(alterTableCommand[i])
+        for(const alterTable of alterTableCommand){
+            await query(alterTable)
+        }
+
+        console.info('  - Create Foreign Keys')
+        for(const foreignkey of foreignKeysController){
+            await query(foreignkey)
         }
 
         console.info('  - Update Migrations Controller DB')
-        for(let i = 0; i < migrationsController.length; i++){
-            await query(migrationsController[i])
+        for(const migrationController of migrationsController){
+            await query(migrationController)
         }
     }
 
@@ -227,7 +232,7 @@ export function runner(query: IDatabaseQuery){
 
             alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
             if(fk){
-                foreignKeys.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
+                foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
             }
         }
     }
@@ -261,7 +266,7 @@ export function runner(query: IDatabaseQuery){
             alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
             
             if(fk){
-                foreignKeys.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
+                foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
             }
         }
     }
@@ -282,6 +287,12 @@ export function runner(query: IDatabaseQuery){
         }
     }
 
+    async function sqlConstructorForeignKeys(foreignKeys: IForeignKeyCommand[]){
+        for(const foreignKey of foreignKeys){
+            foreignKeysController.push(foreignKey.command)
+        }
+    }
+
     return {
         createControllerTables,
         getCreatedTables,
@@ -290,6 +301,7 @@ export function runner(query: IDatabaseQuery){
         sqlContructorAlterTableAddColumn,
         sqlContructorAlterTableModifyColumn,
         sqlContructorAlterTableDropColumn,
+        sqlConstructorForeignKeys,
         runCommands
     }
 

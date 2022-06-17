@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import { tablesToCreate } from './operations/index'
-import { ITable, ITablesToCreate, IDropTable } from './operations/interfaces'
+import { tablesToCreate, foreignKeysToCreate } from './operations/index'
+import { ITable, ITablesToCreate, IDropTable, IForeignKeyCommand } from './operations/interfaces'
 import { IColumns, IDatabaseQuery } from './interfaces'
 import { runner } from './runner'
 
@@ -12,6 +12,7 @@ export async function migrationController(query: IDatabaseQuery){
     
     const {
         pendingTablesToCreate,
+        pendingToCreateForeignkey,
         pendingTablesToDrop,
         createdTablesToVerify
     } = identifyTables(dbCreatedTables)
@@ -22,6 +23,7 @@ export async function migrationController(query: IDatabaseQuery){
     }
     if(pendingTablesToCreate.length > 0){
         await exec.sqlConstructorCreateTable(pendingTablesToCreate)
+        await exec.sqlConstructorForeignKeys(pendingToCreateForeignkey)
     }
     if(createdTablesToVerify.length > 0){
         const {
@@ -49,6 +51,7 @@ function identifyTables(tables: ITable[]){
     })
 
     const pendingTablesToCreate: ITablesToCreate[] = []
+    const pendingToCreateForeignkey: IForeignKeyCommand[] =[]
     const pendingTablesToDrop: IDropTable[] = []
     const createdTablesToVerify: ITable[] = []
 
@@ -56,10 +59,18 @@ function identifyTables(tables: ITable[]){
         if(createdTables.includes(table.table.tableName)){
             return createdTablesToVerify.push(table.table)
         }else{
+            // set new pending tables and foreign keys to create
+            const foreign = foreignKeysToCreate.filter(foreignToCreate => {
+                return foreignToCreate.tableName == table.table.tableName
+            })
+            if(foreign.length > 0){
+                pendingToCreateForeignkey.push(foreign[0])
+            }
             return pendingTablesToCreate.push(table)
         }
     })    
 
+    // set tables to drop
     createdTables.map(table => {
         const exists = tablesToCreate.filter(tableCreate => {
             return tableCreate.table.tableName === table
@@ -71,6 +82,7 @@ function identifyTables(tables: ITable[]){
 
     return {
         pendingTablesToCreate,
+        pendingToCreateForeignkey,
         pendingTablesToDrop,
         createdTablesToVerify
     }
