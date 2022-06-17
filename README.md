@@ -39,11 +39,6 @@ Public project to perform migrations on mysql database.
                   isNull: false
               },
               {
-                  name: 'cpf',
-                  type: 'INT',
-                  isNull: true
-              },
-              {
                   name: 'password',
                   type: 'VARCHAR',
                   size: 255,
