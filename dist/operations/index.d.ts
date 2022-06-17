@@ -1,3 +1,3 @@
-import { createTable, tablesToCreate, foreignKeysToCreate } from './tables';
+import { Table, tablesToCreate, foreignKeysToCreate } from './table';
 import { query, queries } from './query';
-export { createTable, query, tablesToCreate, foreignKeysToCreate, queries };
+export { Table, query, tablesToCreate, foreignKeysToCreate, queries };

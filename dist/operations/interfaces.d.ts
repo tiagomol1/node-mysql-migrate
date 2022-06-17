@@ -8,7 +8,7 @@ interface IFields {
     size?: number;
     pk?: boolean;
     fk?: IForeingKey;
-    isNull?: boolean;
+    isNull: boolean;
     increment?: boolean;
     default?: any;
 }

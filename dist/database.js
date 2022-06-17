@@ -7,6 +7,7 @@ exports.database = void 0;
 const mysql_1 = __importDefault(require("mysql"));
 function database(db_config) {
     async function query(command) {
+        db_config.flags = '-FOUND_ROWS,IGNORE_SPACE';
         const connection = mysql_1.default.createConnection(db_config);
         const results = await new Promise((resolve) => {
             connection.query(command, (err, result) => {
@@ -18,8 +19,6 @@ function database(db_config) {
         await connection.end();
         return results;
     }
-    return {
-        query
-    };
+    return { query };
 }
 exports.database = database;

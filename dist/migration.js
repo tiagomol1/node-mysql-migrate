@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("./database");
-const runner_1 = require("./runner");
+const controller_1 = require("./controller");
 class MigrationDataSource {
     constructor({ db_config, migrations }) {
         console.info('\n> Initialize NODE-MYSQL-MIGRATION.\n');
@@ -11,7 +11,8 @@ class MigrationDataSource {
     }
     async run(migrations) {
         migrations.map(migration => migration());
-        await runner_1.runner(this.connectionQuery);
+        await controller_1.migrationController(this.connectionQuery);
+        return;
     }
 }
 exports.default = MigrationDataSource;
