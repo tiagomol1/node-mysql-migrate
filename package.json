@@ -1,6 +1,6 @@
 {
   "name": "node-mysql-migrate",
-  "version": "1.0.10",
+  "version": "1.0.6",
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
