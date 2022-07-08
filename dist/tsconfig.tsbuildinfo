@@ -567,7 +567,7 @@
         "affectsGlobalScope": false
       },
       "../src/runner.ts": {
-        "version": "fec7a180eb0710d9f2dbd03a8fca2748d9bde71bcc6319f3844758a27ddf573b",
+        "version": "146236292205d8d551a568fc8225fd2583c86ea21b719a050ad168f3d6c9334b",
         "signature": "b4b484c2121a39dd8948693361f3a2cab7df01c917d7cfdeea6042fa9eb0d4e7",
         "affectsGlobalScope": false
       },
@@ -1204,7 +1204,8 @@
       "../src/runner.ts": [
         "../node_modules/@types/node/util.d.ts",
         "../src/interfaces.ts",
-        "../src/operations/interfaces.ts"
+        "../src/operations/interfaces.ts",
+        "../src/operations/table.ts"
       ],
       "../../../../../../usr/share/nodejs/typescript/lib/lib.dom.d.ts": [
         "../node_modules/@types/node/util.d.ts"

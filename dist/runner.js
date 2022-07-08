@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runner = void 0;
+const table_1 = require("./operations/table");
 function runner(query) {
     const createTableCommands = [];
     const createTableController = [];
@@ -164,6 +165,9 @@ function runner(query) {
             await query(alterTable);
         }
         console.info('  - Create Foreign Keys');
+        table_1.foreignKeysToCreate.forEach(foreign => {
+            foreignKeysController.push(foreign.command);
+        });
         for (const foreignkey of foreignKeysController) {
             await query(foreignkey);
         }
