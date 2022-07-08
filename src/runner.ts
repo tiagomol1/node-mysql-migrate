@@ -1,4 +1,5 @@
 import { IDatabaseQuery, IColumns } from "./interfaces";
+import { foreignKeysToCreate } from './operations/table'
 import { ITable, ITablesToCreate, IDropTable, IFields, IForeignKeyCommand } from './operations/interfaces'
 
 export function runner(query: IDatabaseQuery){
@@ -198,6 +199,9 @@ export function runner(query: IDatabaseQuery){
         }
 
         console.info('  - Create Foreign Keys')
+        foreignKeysToCreate.forEach(foreign => {
+            foreignKeysController.push(foreign.command)
+        })
         for(const foreignkey of foreignKeysController){
             await query(foreignkey)
         }
