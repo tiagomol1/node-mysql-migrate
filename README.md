@@ -28,20 +28,17 @@ Public project to perform migrations on mysql database.
               },
               {
                   name: 'fullname',
-                  type: 'VARCHAR',
-                  size: 255,
+                  type: 'VARCHAR(255)',
                   isNull: false
               },
               {
                   name: 'email',
-                  type: 'VARCHAR',
-                  size: 255,
+                  type: 'VARCHAR(255)',
                   isNull: false
               },
               {
                   name: 'password',
-                  type: 'VARCHAR',
-                  size: 255,
+                  type: 'VARCHAR(255)',
                   isNull: false
               },
               {
@@ -82,17 +79,5 @@ Public project to perform migrations on mysql database.
   })
 ```
 > Obs: In the 'migrations' field you must add your migrations.
-
-4. In the "index" file of your project import and run the migration configuration.
-```javascript
-   import express from 'express'
-   import MigrationDataSource from './database/migration'
-   
-   MigrationDataSource
-   
-   const app = express()
-   ...
-   app.listen(3333, () => console.log('Server is running on port: 3333'))
-```
 
 That's all folks.

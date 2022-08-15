@@ -41,7 +41,6 @@ export function runner(query: IDatabaseQuery){
                     fk_fieldName VARCHAR(255) NULL,
                     increment BOOLEAN NULL,
                     default_value VARCHAR(255) NULL,
-                    size_int int NULL,
                     isNull BOOLEAN NULL
                 );
             `)
@@ -80,9 +79,6 @@ export function runner(query: IDatabaseQuery){
                     }
                     if(field['pk']){ 
                         fieldsFormat.pk = true
-                    }
-                    if(field['size_int']){
-                        fieldsFormat.size = field['size_int']
                     }
                     if(field['default_value']){
                         fieldsFormat.default = field['default_value']
@@ -156,8 +152,7 @@ export function runner(query: IDatabaseQuery){
                         fk_fieldName,
                         increment,
                         isNull,
-                        pk,
-                        size_int
+                        pk
                     )
                     VALUES (
                         '${insertId}',
@@ -169,8 +164,7 @@ export function runner(query: IDatabaseQuery){
                         ${field.fk?.fieldName ? `'${field.fk.fieldName}'` : null},
                         ${field.increment ? 1 : 0},                      
                         ${field.isNull ? 1 : 0},            
-                        ${field.pk ? 1 : 0},     
-                        ${field.size ? field.size : 0}     
+                        ${field.pk ? 1 : 0}  
                     );
                 `)
             })
@@ -222,7 +216,6 @@ export function runner(query: IDatabaseQuery){
                     fk,
                     increment,
                     pk,
-                    size,
                     default: default_value
                 }, 
                 tableName
@@ -230,11 +223,11 @@ export function runner(query: IDatabaseQuery){
 
             const table_id = await query(`select * from db_migrations_tables where table_name = '${tableName}'`)
             migrationsController.push(`
-                INSERT INTO db_migrations_fields (db_migrations_tables_id, name, type, pk, fk, fk_tableName, fk_fieldName, increment, default_value, size_int, isNull)
-                VALUES ('${table_id[0].id}', '${name}', '${type}', '${pk ? 1 : 0}', ${fk ? 1 : 'NULL'}, ${fk ? `'${fk.tableName}'` : 'NULL'}, ${fk ? `'${fk.fieldName}'` : 'NULL'}, ${increment ? 1 : 0}, ${default_value ? `${default_value}`: 'NULL'}, ${size ? size : 0}, ${isNull ? 1 : 0})
+                INSERT INTO db_migrations_fields (db_migrations_tables_id, name, type, pk, fk, fk_tableName, fk_fieldName, increment, default_value, isNull)
+                VALUES ('${table_id[0].id}', '${name}', '${type}', '${pk ? 1 : 0}', ${fk ? 1 : 'NULL'}, ${fk ? `'${fk.tableName}'` : 'NULL'}, ${fk ? `'${fk.fieldName}'` : 'NULL'}, ${increment ? 1 : 0}, ${default_value ? `${default_value}`: 'NULL'}, ${isNull ? 1 : 0})
             `)        
 
-            alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
+            alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type} ${pk ? 'PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
             if(fk){
                 foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)
             }
@@ -251,7 +244,6 @@ export function runner(query: IDatabaseQuery){
                     fk,
                     increment,
                     pk,
-                    size,
                     default: default_value
                 }, 
                 tableName
@@ -262,12 +254,11 @@ export function runner(query: IDatabaseQuery){
                 update db_migrations_fields set type = '${type}', pk = ${pk ? 1 : 0}, 
                     fk = ${fk ? 1 : 'NULL'}, fk_tableName = ${fk ? `'${fk.tableName}'` : 'NULL'}, 
                     fk_fieldName = ${fk ? `'${fk.fieldName}'` : 'NULL'}, increment = ${increment ? 1 : 0}, 
-                    default_value = ${default_value ? `'${default_value}'` : 'NULL'}, 
-                    size_int = ${size ? size : 0}, isNull = ${isNull ? 1 : 0}
+                    default_value = ${default_value ? `'${default_value}'` : 'NULL'}, isNull = ${isNull ? 1 : 0}
                 where db_migrations_tables_id = ${table_id[0].id} and name = '${name}';
             `)
 
-            alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${size? `(${size})` : ''}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
+            alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${pk ? ' PRIMARY KEY' : ''}${isNull? ' NULL': ' NOT NULL'}${increment? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'`: ''};`)
             
             if(fk){
                 foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`)

@@ -31,9 +31,8 @@ interface IFields{
         'DATE' |
         'DATETIME' |
         'TIME' |
-        'YEAR'
+        'YEAR' | any
     ,
-    size?: number,
     pk?: boolean,
     fk?: IForeingKey,
     isNull: boolean
