@@ -4,8 +4,7 @@ interface ITable {
 }
 interface IFields {
     name: string;
-    type: 'CHAR' | 'VARCHAR' | 'BINARY' | 'VARBINARY' | 'TINYBINARY' | 'TINYTEXT' | 'TEXT' | 'BLOB' | 'MEDIUMTEXT' | 'MEDIUMBLOB' | 'LONGTEXT' | 'LONGBLOB' | 'BIT' | 'TINYINT' | 'BOOLEAN' | 'SMALLINT' | 'MEDIUMINT' | 'INT' | 'BIGINT' | 'FLOAT' | 'DOUBLE' | 'DECIMAL' | 'DATE' | 'DATETIME' | 'TIME' | 'YEAR';
-    size?: number;
+    type: 'CHAR' | 'VARCHAR' | 'BINARY' | 'VARBINARY' | 'TINYBINARY' | 'TINYTEXT' | 'TEXT' | 'BLOB' | 'MEDIUMTEXT' | 'MEDIUMBLOB' | 'LONGTEXT' | 'LONGBLOB' | 'BIT' | 'TINYINT' | 'BOOLEAN' | 'SMALLINT' | 'MEDIUMINT' | 'INT' | 'BIGINT' | 'FLOAT' | 'DOUBLE' | 'DECIMAL' | 'DATE' | 'DATETIME' | 'TIME' | 'YEAR' | any;
     pk?: boolean;
     fk?: IForeingKey;
     isNull: boolean;

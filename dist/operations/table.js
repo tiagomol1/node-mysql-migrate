@@ -21,9 +21,7 @@ class Table {
         return fields.map(field => {
             const fieldProperties = [];
             fieldProperties.push(field.name);
-            field.size
-                ? fieldProperties.push(`${field.type}(${field.size})`)
-                : fieldProperties.push(field.type);
+            fieldProperties.push(field.type);
             if (field.pk)
                 fieldProperties.push('PRIMARY KEY');
             if (field.increment)
