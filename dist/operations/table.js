@@ -29,8 +29,9 @@ class Table {
             field.isNull
                 ? fieldProperties.push('NULL')
                 : fieldProperties.push('NOT NULL');
-            if (field.default)
-                fieldProperties.push(`DEFAULT '${field.default}'`);
+            if (field.default) {
+                fieldProperties.push(`DEFAULT ${(field.default).toString().includes('(') ? field.default : `'${field.default}'`}`);
+            }
             if (field.fk)
                 this.parseForeignKeys(tableName, field);
             return fieldProperties.join(' ');

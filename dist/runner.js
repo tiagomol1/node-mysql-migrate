@@ -178,7 +178,8 @@ function runner(query) {
                 INSERT INTO db_migrations_fields (db_migrations_tables_id, name, type, pk, fk, fk_tableName, fk_fieldName, increment, default_value, isNull)
                 VALUES ('${table_id[0].id}', '${name}', '${type}', '${pk ? 1 : 0}', ${fk ? 1 : 'NULL'}, ${fk ? `'${fk.tableName}'` : 'NULL'}, ${fk ? `'${fk.fieldName}'` : 'NULL'}, ${increment ? 1 : 0}, ${default_value ? `${default_value}` : 'NULL'}, ${isNull ? 1 : 0})
             `);
-            alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type} ${pk ? 'PRIMARY KEY' : ''}${isNull ? ' NULL' : ' NOT NULL'}${increment ? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'` : ''};`);
+            alterTableCommand.push(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type} ${pk ? 'PRIMARY KEY' : ''}${isNull ? ' NULL' : ' NOT NULL'}${increment ? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT ${default_value.toString().includes('(') ? default_value : `'${default_value}'`}` : ''};`);
+            console.log(`ALTER TABLE ${tableName} ADD COLUMN ${name} ${type} ${pk ? 'PRIMARY KEY' : ''}${isNull ? ' NULL' : ' NOT NULL'}${increment ? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT ${default_value.toString().includes('(') ? default_value : `'${default_value}'`}` : ''};`);
             if (fk) {
                 foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`);
             }
@@ -195,7 +196,7 @@ function runner(query) {
                     default_value = ${default_value ? `'${default_value}'` : 'NULL'}, isNull = ${isNull ? 1 : 0}
                 where db_migrations_tables_id = ${table_id[0].id} and name = '${name}';
             `);
-            alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${pk ? ' PRIMARY KEY' : ''}${isNull ? ' NULL' : ' NOT NULL'}${increment ? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT '${default_value}'` : ''};`);
+            alterTableCommand.push(`ALTER TABLE ${tableName} MODIFY COLUMN ${name} ${type}${pk ? ' PRIMARY KEY' : ''}${isNull ? ' NULL' : ' NOT NULL'}${increment ? ' AUTO_INCREMENT' : ''}${default_value ? ` DEFAULT ${default_value.toString().includes('(') ? default_value : `'${default_value}'`}` : ''};`);
             if (fk) {
                 foreignKeysController.push(`ALTER TABLE ${tableName} ADD FOREIGN KEY (${name}) REFERENCES ${fk.tableName}(${fk.fieldName});`);
             }
